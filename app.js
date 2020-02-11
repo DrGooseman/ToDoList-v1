@@ -35,7 +35,10 @@ const Item = mongoose.model("Item", itemSchema);
 
 app.get("/", function(req, res) {
   const day = date.getDate();
-  res.render("list", { listTitle: day, listItems: items });
+  Item.find({}, function(err, result) {
+    const items = result;
+    res.render("list", { listTitle: day, listItems: items });
+  });
 });
 
 app.post("/", function(req, res) {
