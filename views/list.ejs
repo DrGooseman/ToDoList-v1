@@ -7,12 +7,20 @@
 
       <%  listItems.forEach (function(item){ %>
 <div class="item">
-    <input type="checkbox">
-         <p><%= item.name %></p>
-         <form class="delete-button-form" action="/delete" method="post">
-          <button class="delete-button" type="submit" name="delete" value=<%= item.name %>>-</button>
+
+  <% let genreChk = item.checked ? 'checked' : '' %>
+
+  <form action="/check" method="post">
+    <input type="hidden" name="check2" value=<%= item._id %>>
+    <input type="checkbox" name="check" value=<%= item._id %> <%=genreChk%> onChange="this.form.submit()">
+  </form>
+  
+  <p class="<%=genreChk%>" name="p" value=<%= item._id %> > <%= item.name %> </p>
+
          
-          
+
+         <form class="delete-button-form" action="/delete" method="post">
+          <button class="delete-button" type="submit" name="delete" value=<%= item._id %>>-</button>
       </form>
 </div>
          <%  }); %>

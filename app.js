@@ -17,7 +17,8 @@ mongoose.connect("mongodb://localhost:27017/todolistDB", {
 });
 
 const itemSchema = {
-  name: String
+  name: String,
+  checked: Boolean
 };
 
 const Item = mongoose.model("Item", itemSchema);
@@ -69,9 +70,22 @@ app.post("/", function(req, res) {
 
 app.post("/delete", function(req, res) {
   console.log(req.body);
-  Item.deleteOne({ name: req.body.delete }, function(err) {
+  Item.deleteOne({ _id: req.body.delete }, function(err) {
     res.redirect("/");
   });
+});
+
+app.post("/check", function(req, res) {
+  // console.log(req.body);
+  let isChecked = req.body.check ? true : false;
+  const item = Item.updateOne(
+    { _id: req.body.check2 },
+    { checked: isChecked },
+    function(err, result) {
+      console.log(result);
+      res.redirect("/");
+    }
+  );
 });
 
 app.get("/work", function(req, res) {

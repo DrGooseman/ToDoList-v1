@@ -39,6 +39,11 @@ input:checked + p {
   text-decoration-color: #a683e3;
 }
 
+.checked {
+  text-decoration: line-through;
+  text-decoration-color: #a683e3;
+}
+
 input[type="checkbox"] {
   margin: 20px;
 }
