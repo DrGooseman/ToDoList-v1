@@ -9,13 +9,18 @@
 <div class="item">
     <input type="checkbox">
          <p><%= item.name %></p>
+         <form class="delete-button-form" action="/delete" method="post">
+          <button class="delete-button" type="submit" name="delete" value=<%= item.name %>>-</button>
+         
+          
+      </form>
 </div>
          <%  }); %>
   
- <form class="" action="/" method="post">
+ <form class="item" action="/" method="post">
         <input type="text" name="newItem" placeholder="New Item" autocomplete="off"></input>
-        <button type="submit" name="list" value=<%= listTitle %>>+</button>
-    </form>
+        <button class="submit-button" type="submit" name="list" value=<%= listTitle %>>+</button>
+  </form>
 
       </div>
 

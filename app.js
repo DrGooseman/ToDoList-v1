@@ -37,20 +37,41 @@ app.get("/", function(req, res) {
   const day = date.getDate();
   Item.find({}, function(err, result) {
     const items = result;
+    // for(var i = 0; i < items.length)
     res.render("list", { listTitle: day, listItems: items });
   });
 });
 
 app.post("/", function(req, res) {
-  const item = req.body.newItem;
+  const itemName = req.body.newItem;
 
-  if (req.body.list === "Work") {
-    workItems.push(item);
-    res.redirect("/work");
-  } else {
-    items.push(item);
+  if (itemName === "") {
     res.redirect("/");
+    return;
   }
+
+  const newItem = new Item({
+    name: itemName
+  });
+
+  newItem.save();
+
+  res.redirect("/");
+
+  // if (req.body.list === "Work") {
+  //   workItems.push(item);
+  //   res.redirect("/work");
+  // } else {
+  //   items.push(item);
+  //   res.redirect("/");
+  // }
+});
+
+app.post("/delete", function(req, res) {
+  console.log(req.body);
+  Item.deleteOne({ name: req.body.delete }, function(err) {
+    res.redirect("/");
+  });
 });
 
 app.get("/work", function(req, res) {
@@ -60,12 +81,12 @@ app.get("/work", function(req, res) {
   });
 });
 
-app.post("/work", function(req, res) {
-  const item = req.body.newItem;
-  workItems.push(item);
+// app.post("/work", function(req, res) {
+//   const item = req.body.newItem;
+//   workItems.push(item);
 
-  res.redirect("/work");
-});
+//   res.redirect("/work");
+// });
 
 app.get("/about", function(req, res) {
   res.render("about");
