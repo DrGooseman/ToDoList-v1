@@ -86,19 +86,44 @@ app.post("/", function(req, res) {
 });
 
 app.post("/delete", function(req, res) {
-  Item.deleteOne({ _id: req.body.delete }, function(err) {
-    res.redirect("/");
-  });
+  const listName = req.body.list;
+  // console.log(listName);
+  //console.log(req.body.list);
+  if (listName === date.getDate()) {
+    Item.deleteOne({ _id: req.body.delete }, function(err) {
+      res.redirect("/");
+    });
+  } else {
+    List.findOneAndUpdate(
+      { name: listName },
+      { $pull: { items: { _id: req.body.delete } } },
+      function(err, result) {
+        res.redirect("/" + listName);
+      }
+    );
+  }
 });
 
 app.post("/check", function(req, res) {
+  const listName = req.body.list;
   let isChecked = req.body.check ? true : false;
-  Item.updateOne({ _id: req.body.check2 }, { checked: isChecked }, function(
-    err,
-    result
-  ) {
-    res.redirect("/");
-  });
+
+  if (listName === date.getDate()) {
+    Item.updateOne({ _id: req.body.check2 }, { checked: isChecked }, function(
+      err,
+      result
+    ) {
+      res.redirect("/");
+    });
+  } else {
+    List.findOneAndUpdate(
+      { name: listName, "items._id": req.body.check2 },
+      { "items.$.checked": isChecked },
+      function(err, result) {
+        res.redirect("/" + listName);
+      }
+    );
+  }
 });
 
 app.get("/:customList", function(req, res) {
@@ -110,36 +135,14 @@ app.get("/:customList", function(req, res) {
     let list = result;
 
     if (!list) {
-      console.log("not ");
       list = new List({
         name: customListName,
         items: []
       });
       list.save();
     }
-    console.log("found");
     res.render("list", { listTitle: list.name, listItems: list.items });
   });
-});
-
-app.post("/:customList", function(req, res) {
-  const customListName = req.params.customList;
-
-  const itemName = req.body.newItem;
-
-  if (itemName === "") {
-    res.redirect("/" + customListName);
-    return;
-  }
-
-  const newItem = new Item({
-    name: itemName,
-    checked: false
-  });
-
-  newItem.save();
-
-  res.redirect("/");
 });
 
 app.get("/about", function(req, res) {

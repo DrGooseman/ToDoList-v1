@@ -12,6 +12,7 @@
 
   <form action="/check" method="post">
     <input type="hidden" name="check2" value=<%= item._id %>>
+    <input type="hidden" name="list" value="<%= listTitle %>">
     <input type="checkbox" name="check" value=<%= item._id %> <%=isChecked %> onChange="this.form.submit()">
   </form>
   
@@ -20,6 +21,7 @@
          
 
          <form class="delete-button-form" action="/delete" method="post">
+            <input type="hidden" name="list" value="<%= listTitle %>">
           <button class="delete-button" type="submit" name="delete" value=<%= item._id %>>-</button>
       </form>
 </div>
@@ -27,7 +29,7 @@
   
  <form class="item" action="/" method="post">
         <input type="text" name="newItem" placeholder="New Item" autocomplete="off"></input>
-        <button class="submit-button" type="submit" name="list" value=<%= listTitle %>>+</button>
+        <button class="submit-button" type="submit" name="list" value="<%= listTitle %>">+</button>
   </form>
 
       </div>
