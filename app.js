@@ -23,6 +23,13 @@ const itemSchema = {
 
 const Item = mongoose.model("Item", itemSchema);
 
+const listSchema = {
+  name: String,
+  items: [itemSchema]
+};
+
+const List = mongoose.model("List", listSchema);
+
 // const item1 = new Item({ name: "Buy Food" });
 // const item2 = new Item({ name: "Cook Food" });
 // const item3 = new Item({ name: "Eat Food" });
@@ -45,6 +52,7 @@ app.get("/", function(req, res) {
 
 app.post("/", function(req, res) {
   const itemName = req.body.newItem;
+  const listName = req.body.list;
 
   if (itemName === "") {
     res.redirect("/");
@@ -52,12 +60,21 @@ app.post("/", function(req, res) {
   }
 
   const newItem = new Item({
-    name: itemName
+    name: itemName,
+    checked: false
   });
 
-  newItem.save();
+  if (listName === date.getDate()) {
+    newItem.save();
 
-  res.redirect("/");
+    res.redirect("/");
+  } else {
+    List.findOne({ name: listName }, function(err, foundList) {
+      foundList.items.push(newItem);
+      foundList.save();
+      res.redirect("/" + listName);
+    });
+  }
 
   // if (req.body.list === "Work") {
   //   workItems.push(item);
@@ -69,38 +86,61 @@ app.post("/", function(req, res) {
 });
 
 app.post("/delete", function(req, res) {
-  console.log(req.body);
   Item.deleteOne({ _id: req.body.delete }, function(err) {
     res.redirect("/");
   });
 });
 
 app.post("/check", function(req, res) {
-  // console.log(req.body);
   let isChecked = req.body.check ? true : false;
-  const item = Item.updateOne(
-    { _id: req.body.check2 },
-    { checked: isChecked },
-    function(err, result) {
-      console.log(result);
-      res.redirect("/");
-    }
-  );
-});
-
-app.get("/work", function(req, res) {
-  res.render("list", {
-    listTitle: "Work",
-    listItems: workItems
+  Item.updateOne({ _id: req.body.check2 }, { checked: isChecked }, function(
+    err,
+    result
+  ) {
+    res.redirect("/");
   });
 });
 
-// app.post("/work", function(req, res) {
-//   const item = req.body.newItem;
-//   workItems.push(item);
+app.get("/:customList", function(req, res) {
+  const customListName = req.params.customList;
 
-//   res.redirect("/work");
-// });
+  List.findOne({ name: customListName }, function(err, result) {
+    if (err) return;
+
+    let list = result;
+
+    if (!list) {
+      console.log("not ");
+      list = new List({
+        name: customListName,
+        items: []
+      });
+      list.save();
+    }
+    console.log("found");
+    res.render("list", { listTitle: list.name, listItems: list.items });
+  });
+});
+
+app.post("/:customList", function(req, res) {
+  const customListName = req.params.customList;
+
+  const itemName = req.body.newItem;
+
+  if (itemName === "") {
+    res.redirect("/" + customListName);
+    return;
+  }
+
+  const newItem = new Item({
+    name: itemName,
+    checked: false
+  });
+
+  newItem.save();
+
+  res.redirect("/");
+});
 
 app.get("/about", function(req, res) {
   res.render("about");
